@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectly Login</title>
+    <style>
+        /* Django Admin Login Styling */
+        body {
+            font-family: "Roboto", "Lucida Grande", "DejaVu Sans", "Bitstream Vera Sans", Verdana, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            background: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+ 
+        .login-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 320px;
+            max-width: 100%;
+        }
+ 
+        .login-header {
+            background: #417690;
+            padding: 20px;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+ 
+        .login-header h1 {
+            color: #f5dd5d;
+            font-size: 18px;
+            font-weight: 400;
+            margin: 0;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+ 
+        .login-header .logo {
+            font-size: 24px;
+            color: #ffc107;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-header .logo:hover {
+            transform: rotate(180deg);
+        }
+        
+        /* Theme Toggle Styles */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: #ffc107;
+            cursor: pointer;
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+        
+        /* Light Theme (Default) */
+        body.light-theme {
+            background: #f8f8f8;
+            color: #333;
+        }
+        
+        body.light-theme .login-container {
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+        
+        body.light-theme .login-header {
+            background: #79aec8;
+        }
+        
+        body.light-theme .login-header h1 {
+            color: #fff;
+        }
+        
+        body.light-theme .form-group label {
+            color: #666;
+        }
+        
+        body.light-theme .form-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        
+        body.light-theme .form-group input:focus {
+            border-color: #79aec8;
+        }
+        
+        /* Dark Theme */
+        body.dark-theme {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .login-container {
+            background: #2d2d2d;
+            border: 1px solid #404040;
+        }
+        
+        body.dark-theme .login-header {
+            background: #1e3a8a;
+        }
+        
+        body.dark-theme .login-header h1 {
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .form-group label {
+            color: #b0b0b0;
+        }
+        
+        body.dark-theme .form-group input {
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .form-group input:focus {
+            border-color: #4a9eff;
+        }
+        
+        body.dark-theme .divider::before {
+            background: #404040;
+        }
+        
+        body.dark-theme .divider span {
+            background: #1a1a1a;
+            color: #b0b0b0;
+        }
+ 
+        .login-content {
+            padding: 20px;
+        }
+ 
+        .form-group {
+            margin-bottom: 15px;
+        }
+ 
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+ 
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+ 
+        .form-group input:focus {
+            outline: none;
+            border-color: #79aec8;
+            box-shadow: 0 0 0 2px rgba(121, 174, 200, 0.25);
+        }
+ 
+        .login-button {
+            background: #79aec8;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.15s ease-in-out;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+ 
+        .login-button:hover {
+            background: #609ab6;
+        }
+ 
+        .google-login-button {
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.15s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+ 
+        .google-login-button:hover {
+            background: #357ae8;
+        }
+ 
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjY0IDkuMjA1NTVDMTcuNjQgOC41NjYzNyAxNy41ODI3IDcuOTUyNzQgMTcuNDc2NCA3LjM2MzY0SDlWMTAuODQ1NUgxMy44NzM2QzEzLjQyMDUgMTEuOTY5MSAxMi40MjczIDEyLjg0NTUgMTEuMDQ1NSAxMy4yNzM2TDEzLjU2MzYgMTUuMkMxNC41NCAxNC40NTQ1IDE1LjM4MTggMTMuMzYzNiAxNS45MDkxIDEyLjA0NTVIMTdWNEMxNy4yNzI3IDEwLjg0NTUgMTcuNjQgMTAuMDQ1NSAxNy42NCA5LjIwNTU1WiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNOSAxOC4wNDU1QzEwLjU3MjcgMTguMDQ1NSAxMS45NzM2IDE3LjQ0NTUgMTMuMDQ1NSAxNi4zNjM2TDExLjA0NTUgMTQuMzYzNkMxMC4zNjM2IDE0LjgwOTEgOS41NjM2NCAxNS4wNDU1IDguNzI3MjcgMTUuMDQ1NUM2LjI3MjczIDE1LjA0NTUgNC4yMTgyIDEzLjYzNjQgMy4wNDU0NSAxMS41NDU1TDIuNTQ1NDUgMTIuMDQ1NUMxLjM2MzY0IDEwLjA0NTUgMC42NDA5MDkgNy41NjM2NCAwLjY0MDkwOSA0Ljg0NTQ1QzAuNjQwOTA5IDIuMTI3MjcgMi4yMTgyIDAuMDQ1NDU0NSA0Ljg0NTQ1IDAuMDQ1NDU0NUg5VjIuMDQ1NDVINC44NDU0NUM0LjE4MTgyIDIuMDQ1NDUgMy42NDA5MSAyLjY4MTgyIDMuNjQwOTEgMy40NTQ1NUMzLjY0MDkxIDQuMjI3MjcgNC4xODE4MiA0Ljg0NTQ1IDQuODQ1NDUgNC44NDU0NUg5VjYuODQ1NDVINC44NDU1QzQuMTgxODIgNi44NDU0NSAzLjY0MDkxIDcuNDgxODIgMy42NDA5MSA4LjI1NDU1QzMuNjQwOTEgOS4wMjcyNyA0LjE4MTgyIDkuNjQwOTEgNC44NDU0NSA5LjY0MDkxSDlWNi44NDU0NUg4LjcyNzI3QzguNTQ1NDUgNy4yMjcyNyA4LjM2MzY0IDcuNTgxODIgOC4xODE4MiA3LjkyNzI3TDguMDQ1NDUgOC4yNTQ1NUw4LjE4MTgyIDguNTgxODJDOC4zNjM2NCA4LjkyNzI3IDguNTQ1NDUgOS4yMjcyNyA4LjcyNzI3IDkuNjQwOTFIOFYxMS42NDA5SDguNzI3MjdDOC41NDU0NSAxMi4wMjcyNyA4LjM2MzY0IDEyLjM4MTggOC4xODE4MiAxMi43MjczTDguMDQ1NDUgMTMuMDQ1NUw4LjE4MTgyIDEzLjM4MThDOC4zNjM2NCAxMy43MjczIDguNTQ1NDUgMTQuMDI3MiA4LjcyNzI3IDE0LjQ0MDlIOFYxNi40NDA5SDguNzI3MjdDOC41NDU0NSAxNi44MjcyIDguMzYzNjQgMTcuMTgxOCA4LjE4MTgyIDE3LjUyNzNMOCAxNy44NDU1TDguMTgxODIgMTguMTgxOEM4LjM2MzY0IDE4LjUyNzMgOC41NDU0NSAxOC44MjcyIDguNzI3MjcgMTkuMjQwOUg5VjE4LjA0NTVaIiBmaWxsPSIjMzQ4NzY2Ii8+CjxwYXRoIGQ9Ik0zLjY0MDkxIDMuNDU0NTVDMy42NDA5MSAyLjY4MTgyIDQuMTgxODIgMi4wNDU0NSA0Ljg0NTQ1IDIuMDQ1NDVIOVYwLjA0NTQ1NDVDNi4yMTgyIDAuMDQ1NDU0NSA0LjY0MDkwOSAyLjEyNzI3IDMuNjQwOTEgNC44NDU0NUMzLjY0MDkxIDcuNTYzNjQgNC4zNjM2NCAxMC4wNDU1IDUuNTQ1NDUgMTIuMTM2NEw2LjA0NTQ1IDExLjYzNjRDNCA5LjU0NTQ1IDIuMTgxODIgNy4wNjM2NCAwLjY0MDkwOSA0Ljg0NTQ1QzAuNjQwOTA5IDIuMTI3MjcgMi4yMTgyIDAuMDQ1NDU0NSA0Ljg0NTQ1IDAuMDQ1NDU0NUg5VjIuMDQ1NDVINC44NDU0NUM0LjE4MTgyIDIuMDQ1NDUgMy42NDA5MSAyLjY4MTgyIDMuNjQwOTEgMy40NTQ1NVoiIGZpbGw9IiNGQkJDMDQiLz4KPHBhdGggZD0iTTE3LjQ3NjQgNy4zNjM2NEMxNy41ODI3IDcuOTUyNzQgMTcuNjQgOC41NjYzNyAxNy42NCA5LjIwNTU1QzE3LjY0IDEwLjA0NTUgMTcuMjcyNyAxMC44NDU1IDE3IDExLjY0MDlIMTUuOTA5MUMxNS4zODE4IDEzLjM2MzYgMTQuNTQgMTQuNDU0NSAxMy41NjM2IDE1LjJMMTEuMDQ1NSAxMy4yNzM2QzEyLjQyNzMgMTIuODQ1NSAxMy40MjA1IDExLjk2OTEgMTMuODczNiAxMC44NDU1SDlWNy4zNjM2NEgxNy40NzY0WiIgZmlsbD0iI0VBNDMzNSIvPgo8L3N2Zz4K') no-repeat center;
+            background-size: contain;
+        }
+ 
+        .error-message {
+            color: #ba2121;
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff2f2;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            display: none;
+        }
+ 
+        .success-message {
+            color: #2e7d32;
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f8e9;
+            border: 1px solid #c5e1a5;
+            border-radius: 4px;
+            display: none;
+        }
+ 
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+ 
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+ 
+        .divider span {
+            background: #fff;
+            padding: 0 10px;
+            color: #666;
+            font-size: 12px;
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Log in</button>
+            </form>
+ 
+            <div class="divider">
+                <span>OR</span>
+            </div>
+ 
+            <button id="google-login" class="google-login-button">
+                <div class="google-icon"></div>
+                Login with Google
+            </button>
+ 
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </div>
+    </div>
+                });
+            });
+        };
+
+        // Traditional Email/Password Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+ 
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+ 
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+ 
+            try {
+                const response = await fetch('/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+ 
+                const data = await response.json();
+ 
+                if (response.ok) {
+                    // Store token and user info
+                    localStorage.setItem('token', data.key);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+ 
+                    // Show success message
+                    successDiv.textContent = 'Login successful! Redirecting...';
+                    successDiv.style.display = 'block';
+ 
+                    // Redirect to dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    // Show error message
+                    errorDiv.textContent = data.error || 'Login failed';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        });
+ 
+        // Google OAuth Login
+        document.getElementById('google-login').addEventListener('click', async () => {
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+ 
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+ 
+            try {
+                // Wait for Google auth to be ready
+                if (!gapi.auth2) {
+                    throw new Error('Google auth not loaded');
+                }
+                
+                const authInstance = gapi.auth2.getAuthInstance();
+                if (!authInstance) {
+                    throw new Error('Google auth not initialized');
+                }
+                
+                const googleUser = await authInstance.signIn();
+                const id_token = googleUser.getAuthResponse().id_token;
+ 
+                const response = await fetch('/auth/google/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id_token: id_token
+                    })
+                });
+ 
+                const data = await response.json();
+ 
+                if (response.ok) {
+                    // Store token and user info
+                    localStorage.setItem('token', data.key);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+ 
+                    // Show success message
+                    successDiv.textContent = 'Google login successful! Redirecting...';
+                    successDiv.style.display = 'block';
+ 
+                    // Redirect to dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '/dashboard.html';
+                    }, 1500);
+                } else {
+                    // Show error message
+                    errorDiv.textContent = data.error || 'Google login failed';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Google login error:', error);
+                errorDiv.textContent = 'Google login failed: ' + error.message;
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

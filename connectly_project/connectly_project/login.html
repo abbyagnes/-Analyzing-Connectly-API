@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connectly Login</title>
+    <style>
+        /* Django Admin Login Styling */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            background: #f8f8f8;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        
+        .login-container {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            width: 320px;
+            max-width: 100%;
+        }
+        
+        .login-header {
+            background: #417690;
+            padding: 20px;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .login-header h1 {
+            color: #f5dd5d;
+            font-size: 18px;
+            font-weight: 400;
+            margin: 0;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+        
+        .login-header .logo {
+            font-size: 24px;
+            color: #ffc107;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-header .logo:hover {
+            transform: rotate(180deg);
+        }
+        
+        /* Theme Toggle Styles */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: #ffc107;
+            cursor: pointer;
+            font-size: 24px;
+            transition: transform 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            transform: rotate(180deg);
+        }
+        
+        /* Light Theme (Default) */
+        body.light-theme {
+            background: #f8f8f8;
+            color: #333;
+        }
+        
+        body.light-theme .login-container {
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+        
+        body.light-theme .login-header {
+            background: #79aec8;
+        }
+        
+        body.light-theme .login-header h1 {
+            color: #fff;
+        }
+        
+        body.light-theme .form-group label {
+            color: #666;
+        }
+        
+        body.light-theme .form-group input {
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #333;
+        }
+        
+        body.light-theme .form-group input:focus {
+            border-color: #79aec8;
+        }
+        
+        /* Dark Theme */
+        body.dark-theme {
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .login-container {
+            background: #2d2d2d;
+            border: 1px solid #404040;
+        }
+        
+        body.dark-theme .login-header {
+            background: #1e3a8a;
+        }
+        
+        body.dark-theme .login-header h1 {
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .form-group label {
+            color: #b0b0b0;
+        }
+        
+        body.dark-theme .form-group input {
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            color: #e0e0e0;
+        }
+        
+        body.dark-theme .form-group input:focus {
+            border-color: #4a9eff;
+        }
+        
+        body.dark-theme .divider::before {
+            background: #404040;
+        }
+        
+        body.dark-theme .divider span {
+            background: #1a1a1a;
+            color: #b0b0b0;
+        }
+        
+        .login-content {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #666;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #417690;
+            box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.25);
+        }
+        
+        .login-button {
+            background: #417690;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.15s ease-in-out;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.15);
+        }
+        
+        .login-button:hover {
+            background: #355d73;
+        }
+        
+        .google-login-button {
+            background: #4285f4;
+            color: #fff;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.15s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .google-login-button:hover {
+            background: #357ae8;
+        }
+        
+        .google-icon {
+            width: 18px;
+            height: 18px;
+            background: url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTgiIGhlaWdodD0iMTgiIHZpZXdCb3g9IjAgMCAxOCAxOCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTE3LjY0IDkuMjA1NTVDMTcuNjQgOC41NjYzNyAxNy41ODI3IDcuOTUyNzQgMTcuNDc2NCA3LjM2MzY0SDlWMTAuODQ1NUgxMy44NzM2QzEzLjQyMDUgMTEuOTY5MSAxMi40MjczIDEyLjg0NTUgMTEuMDQ1NSAxMy4yNzM2TDEzLjU2MzYgMTUuMkMxNC41NCAxNC40NTQ1IDE1LjM4MTggMTMuMzYzNiAxNS45MDkxIDEyLjA0NTVIMTdWNEMxNy4yNzI3IDEwLjg0NTUgMTcuNjQgMTAuMDQ1NSAxNy42NCA5LjIwNTU1WiIgZmlsbD0iIzQyODVGNCIvPgo8cGF0aCBkPSJNOSAxOC4wNDU1QzEwLjU3MjcgMTguMDQ1NSAxMS45NzM2IDE3LjQ0NTUgMTMuMDQ1NSAxNi4zNjM2TDExLjA0NTUgMTQuMzYzNkMxMC4zNjM2IDE0LjgwOTEgOS41NjM2NCAxNS4wNDU1IDguNzI3MjcgMTUuMDQ1NUM2LjI3MjczIDE1LjA0NTUgNC4yMTgyIDEzLjYzNjQgMy4wNDU0NSAxMS41NDU1TDIuNTQ1NDUgMTIuMDQ1NUMxLjM2MzY0IDEwLjA0NTUgMC42NDA5MDkgNy41NjM2NCAwLjY0MDkwOSA0Ljg0NTQ1QzAuNjQwOTA5IDIuMTI3MjcgMi4yMTgyIDAuMDQ1NDU0NSA0Ljg0NTQ1IDAuMDQ1NDU0NUg5VjIuMDQ1NDVINC44NDU0NUM0LjE4MTgyIDIuMDQ1NDUgMy42NDA5MSAyLjY4MTgyIDMuN...") no-repeat center;
+            background-size: contain;
+        }
+        
+        .error-message {
+            color: #ba2121;
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #fff2f2;
+            border: 1px solid #ffcdd2;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #2e7d32;
+            font-size: 13px;
+            margin-top: 10px;
+            padding: 10px;
+            background: #f1f8e9;
+            border: 1px solid #c5e1a5;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+        }
+        
+        .divider span {
+            background: #fff;
+            padding: 0 10px;
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Connectly Login</h1>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="login-content">
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required autofocus>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="login-button">Log in</button>
+            </form>
+            
+            <div class="divider">
+                <span>OR</span>
+            </div>
+            
+            <button id="google-login" class="google-login-button" onclick="promptGoogleLogin()">
+    <div class="google-icon"></div>
+    Login with Google
+</button>
+            
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+        </div>
+    </div>
+    
+    <!-- Google OAuth - Popup Approach -->
+    <script>
+        // Check for fallback authentication from URL redirect
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            const userId = urlParams.get('user_id');
+            const email = urlParams.get('email');
+            const firstName = urlParams.get('first_name');
+            const lastName = urlParams.get('last_name');
+            const googleAuth = urlParams.get('google_auth');
+            
+            console.log("URL params found:", {token, userId, email, firstName, lastName, googleAuth});
+            
+            if (token || googleAuth) {
+                try {
+                    let authData;
+                    
+                    if (token) {
+                        // Token is from OAuth callback JSON response
+                        authData = { token: token };
+                    } else {
+                        authData = JSON.parse(decodeURIComponent(googleAuth));
+                    }
+                    
+                    console.log("Auth data processed:", authData);
+                    console.log("OAuth callback fields:", Object.keys(authData)); // Debugging
+                    console.log("OAuth user data:", authData.user); // Debugging
+                    console.log("OAuth first_name:", authData.user?.first_name); // Debugging
+                    console.log("OAuth email:", authData.user?.email); // Debugging
+                    
+                    if (authData.token) {
+                        // Store token and user data directly from OAuth callback
+                        console.log("Using OAuth callback data for login");
+                        
+                        // Store token and user data directly
+                        localStorage.setItem("token", authData.token);
+                        const username = authData.user?.email ? authData.user.email.split('@')[0] : authData.user?.email;
+                        localStorage.setItem("user", JSON.stringify({
+                            id: authData.user?.id,
+                            email: authData.user?.email,
+                            username: username,
+                            first_name: authData.user?.first_name,
+                            last_name: authData.user?.last_name,
+                            name: authData.user?.name
+                        }));
+                        
+                        document.getElementById("success-message").textContent = 
+                            "Google login successful! Redirecting...";
+                        document.getElementById("success-message").style.display = "block";
+                        
+                        setTimeout(() => {
+                            window.location.href = '/dashboard/';
+                        }, 1500);
+                    } else if (authData.user) {
+                        // Use user info from Google OAuth
+                        console.log("Using user info for login");
+                        localStorage.setItem("user", JSON.stringify({
+                            id: authData.user_id,
+                            email: authData.email,
+                            username: authData.email,
+                            first_name: authData.first_name,
+                            last_name: authData.last_name
+                        }));
+                        
+                        document.getElementById("success-message").textContent = 
+                            "Google login successful! Redirecting...";
+                        document.getElementById("success-message").style.display = "block";
+                        
+                        setTimeout(() => {
+                            window.location.href = '/dashboard/';
+                        }, 1500);
+                    }
+                    
+                    // Clean up URL
+                    const cleanUrl = window.location.pathname;
+                    window.history.replaceState({}, document.title, cleanUrl);
+                } catch (e) {
+                    console.error("Failed to process auth data:", e);
+                    document.getElementById("error-message").textContent = 
+                        "Failed to process authentication: " + e.message;
+                    document.getElementById("error-message").style.display = "block";
+                }
+            }
+        };
+        
+        // Direct Google OAuth popup
+        function promptGoogleLogin() {
+            console.log("Opening Google OAuth popup");
+            
+            // Generate OAuth URL with proper encoding and state
+            const state = Math.random().toString(36).substring(7);
+            const params = new URLSearchParams({
+                'client_id': '61875478569-uqin9o29sffkn8qqoac648d81fgnrk1f.apps.googleusercontent.com',
+                'redirect_uri': 'http://127.0.0.1:8000/auth/google/callback/',
+                'response_type': 'code',
+                'scope': 'email profile',
+                'access_type': 'offline',
+                'prompt': 'select_account',
+                'state': state
+            });
+            
+            const authUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
+            
+            console.log("OAuth URL:", authUrl);
+            console.log("State:", state);
+            
+            // Instead of popup, use direct redirect for better compatibility
+            window.location.href = authUrl;
+        }
+        
+        // Listen for messages from popup callback
+        window.addEventListener('message', function(event) {
+            console.log("Message received:", event.data);
+            console.log("Event origin:", event.origin);
+            console.log("Window location origin:", window.location.origin);
+            console.log("Event source:", event.source);
+            
+            // Verify origin for security - allow both localhost and 127.0.0.1
+            const allowedOrigins = [
+                window.location.origin,
+                'http://localhost:8000',
+                'http://127.0.0.1:8000'
+            ];
+            
+            if (!allowedOrigins.includes(event.origin)) {
+                console.log("Origin not allowed:", event.origin);
+                return;
+            }
+            
+            if (event.data.type === 'google-oauth-success') {
+                console.log("Google OAuth success message received");
+                // Send acknowledgment back to popup
+                if (event.source) {
+                    event.source.postMessage({type: 'ack-google-oauth'}, event.origin);
+                }
+                
+                if (event.data.id_token) {
+                    // Use the ID token directly from callback
+                    console.log("Using ID token for login");
+                    handleGoogleLogin({ credential: event.data.id_token });
+                } else if (event.data.user) {
+                    // Alternative: Use user info from callback
+                    console.log("User logged in:", event.data.user);
+                    
+                    // Store user info and token
+                    localStorage.setItem("user", JSON.stringify(event.data.user));
+                    
+                    // Show success message
+                    document.getElementById("success-message").textContent = 
+                        "Google login successful! Redirecting...";
+                    document.getElementById("success-message").style.display = "block";
+                    
+                    // Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1500);
+                }
+            } else if (event.data.type === 'google-oauth-error') {
+                document.getElementById("error-message").textContent = 
+                    event.data.error || "Google login failed";
+                document.getElementById("error-message").style.display = "block";
+            }
+        });
+        
+        // Google Identity Services callback function
+        function handleGoogleLogin(response) {
+            console.log("Google login response received:", response);
+            const id_token = response.credential;
+
+            fetch('/auth/google/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_token: id_token
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log('Google login response data:', data); // Debugging
+                if (data.key) {
+                    console.log('Storing user data:', data.user); // Debugging
+                    localStorage.setItem("token", data.key);
+                    localStorage.setItem("user", JSON.stringify(data.user));
+
+                    document.getElementById("success-message").textContent =
+                        "Google login successful! Redirecting...";
+                    document.getElementById("success-message").style.display = "block";
+
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1500);
+                } else {
+                    document.getElementById("error-message").textContent =
+                        data.error || "Google login failed";
+                    document.getElementById("error-message").style.display = "block";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById("error-message").textContent =
+                    "Google login failed: " + err.message;
+                document.getElementById("error-message").style.display = "block";
+            });
+        }
+        // Theme Management
+        const themes = ['light-theme', 'dark-theme'];
+        let currentThemeIndex = 0;
+        
+        // Initialize theme from localStorage or default to light
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme && themes.includes(savedTheme)) {
+                document.body.className = savedTheme;
+                currentThemeIndex = themes.indexOf(savedTheme);
+            } else {
+                document.body.className = themes[0]; // Default to light theme
+                localStorage.setItem('theme', themes[0]);
+            }
+        }
+        
+        // Toggle theme function
+        function toggleTheme() {
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            const newTheme = themes[currentThemeIndex];
+            document.body.className = newTheme;
+            localStorage.setItem('theme', newTheme);
+        }
+        
+        // Initialize theme on page load
+        initTheme();
+        
+        // Add theme toggle click handler
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+
+        // Traditional Email/Password Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
+            // Hide previous messages
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            try {
+                const response = await fetch('/auth/login/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Regular login response data:', data); // Debugging
+                
+                if (response.ok) {
+                    // Store token and user info
+                    console.log('Storing user data from regular login:', data.user); // Debugging
+                    localStorage.setItem('token', data.key);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    // Show success message
+                    successDiv.textContent = 'Login successful! Redirecting...';
+                    successDiv.style.display = 'block';
+                    
+                    // Redirect to dashboard or home page
+                    setTimeout(() => {
+                        window.location.href = '/dashboard/';
+                    }, 1500);
+                } else {
+                    // Show error message
+                    errorDiv.textContent = data.error || 'Login failed';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
